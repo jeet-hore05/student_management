@@ -51,3 +51,35 @@ Next, we set up MongoDB as the database for the application.
 MongoDB will be used to store the data required by the Student Management System.
 
 We use Mongoose to establish a connection between our Node.js backend and MongoDB.
+
+**Step 2 : Setup Error Handling**
+
+To handle errors properly throughout the application, we created a centralized error-handling system.
+
+**1. Create Error Middleware**
+
+Created:
+
+`middlewares/error.middleware.js`
+
+The error middleware is responsible for:
+
+- Handling errors generated in the application
+- Setting a default status code when one is not provided
+- Setting a default error message
+- Sending a consistent error response to the client
+- Providing the error stack for debugging
+
+**2. Create AppError Utility**
+
+Created:
+
+`utils/error.util.js`
+
+The `AppError` utility is a custom error class used to create application-specific errors.
+
+It allows us to define:
+
+- Custom error messages
+- HTTP status codes
+- Error stack traces
