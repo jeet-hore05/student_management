@@ -38,9 +38,28 @@ const userSchema = new Schema({
     },
     role:{
         type : String,
-        enum : ["TEACHER","STUDENT"],
+        enum : ["ADMIN","TEACHER","STUDENT"],
         required : true
     },
+
+    // Student Information
+    rollNumber: {
+            type: String,
+            unique: true,
+            sparse: true,
+            trim: true
+        },
+
+        department: {
+            type: String,
+            trim: true
+        },
+
+        semester: {
+            type: Number,
+            min: [1, "Semester must be at least 1"],
+            max: [8, "Semester cannot be greater than 8"]
+        },
     
     forgotPasswordToken : String,
     forgotPasswordExpiry : Date

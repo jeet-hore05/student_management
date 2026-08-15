@@ -8,51 +8,182 @@ const cookieOptions = {
     secure : true
 }
 
-const register = async(req,res, next)=>{
-    const {fullName , email, password, role} = req.body;
+// CREATE STUDENT
+// Only ADMIN should be able to call this controller
 
-    if(!fullName || !email || !password || !role){
-        return next(new AppError("All fields are required", 400));
-    }
+const createStudent = async(req,res,next)=>{
 
-    const userExists =await User.findOne({email});
+    try{
+        const {
+            fullName,
+            email,
+            password,
+            rollNumber,
+            department,
+            semester
+        } = req.body;
 
-    if(userExists) {
-        return next(new AppError("Email already exists.", 400))
-    }
-
-    const user = await User.create({
-        fullName,
-        email,
-        password,
-        role,
-        avatar:{
-            public_id : email,
-            secure_url: ""
+        // Check required fields
+        if (
+            !fullName ||
+            !email ||
+            !password ||
+            !rollNumber ||
+            !department ||
+            !semester
+        ) {
+            return next(
+                new AppError("All fields are required", 400)
+            );
         }
-    });
+        // Check if email already exists
+        const userExists = await User.findOne({ email });
 
-    if(!user) {
-        return next(new AppError("User registration failed, try again.", 400))
+        if (userExists) {
+            return next(
+                new AppError("Email already exists.", 400)
+            );
+        }
+
+
+        // Check if roll number already exists
+        const rollNumberExists = await User.findOne({
+            rollNumber
+        });
+
+        if (rollNumberExists) {
+            return next(
+                new AppError("Roll number already exists.", 400)
+            );
+        }
+
+        // Create student
+        const student = await User.create({
+
+            fullName,
+            email,
+            password,
+
+            // IMPORTANT:
+            // Admin decides the role.
+            // Student cannot decide their own role.
+            role: "STUDENT",
+
+            rollNumber,
+            department,
+            semester,
+
+            avatar: {
+                public_id: email,
+                secure_url: ""
+            }
+        });
+
+        if (!student) {
+            return next(
+                new AppError(
+                    "Student creation failed, try again.",
+                    400
+                )
+            );
+        }
+
+        //TODO : File upload
+
+
+        // Remove password from response
+        student.password = undefined;
+
+
+        res.status(201).json({
+            success: true,
+            message: "Student created successfully",
+            student
+        });
+
+    } catch(error){
+        return next(
+            new AppError(e.message, 500)
+        );
     }
-
-
-    // TODO : File upload
-
-    await user.save();
-
-    user.password=undefined;
-
-    const token = await user.generateJWTToken();
-
-    res.cookie("token", token, cookieOptions);
-
-    res.status(201).json({
-        success : true,
-        message : "User registered successfully",
-        user
-    })
 };
+
+// CREATE TEACHER
+// Only ADMIN should be able to call this controller
+
+const createTeacher = async (req, res, next) => {
+
+    try {
+
+        const {
+            fullName,
+            email,
+            password
+        } = req.body;
+
+
+        if (!fullName || !email || !password) {
+            return next(
+                new AppError("All fields are required", 400)
+            );
+        }
+
+        // Check email
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
+            return next(
+                new AppError("Email already exists.", 400)
+            );
+        }
+
+
+        // Create teacher
+        const teacher = await User.create({
+
+            fullName,
+            email,
+            password,
+
+            // Role is decided by admin/controller
+            role: "TEACHER",
+
+            avatar: {
+                public_id: email,
+                secure_url: ""
+            }
+        });
+
+        if (!teacher) {
+            return next(
+                new AppError(
+                    "Teacher creation failed, try again.",
+                    400
+                )
+            );
+        }
+
+        // TODO : File upload
+
+
+        teacher.password = undefined;
+
+
+        res.status(201).json({
+            success: true,
+            message: "Teacher created successfully",
+            teacher
+        });
+
+    } catch (e) {
+
+        return next(
+            new AppError(e.message, 500)
+        );
+    }
+};
+
+
 
 const login = async(req,res,next)=>{
     try{
@@ -117,8 +248,10 @@ const getProfile = async(req,res)=>{
 
 };
 
+
 export {
-    register,
+    createStudent,
+    createTeacher,
     login,
     logout,
     getProfile
