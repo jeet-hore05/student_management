@@ -3,6 +3,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import {config} from "dotenv";
 
+import userRoutes from "./routes/user.routes.js";
+import errorMiddleware from "./middlewares/error.middleware.js";
+
 
 config();
 
@@ -16,6 +19,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
+
+app.use("/api/v1/user", userRoutes);
+
+
 app.use("/ping", function(req,res){
     res.send("pong");
 });
@@ -23,6 +30,8 @@ app.use("/ping", function(req,res){
 app.use((req,res)=>{
     res.status(404).send("OOPS!! 404 page not found")
 });
+
+app.use(errorMiddleware)
 
 
 export default app ;
