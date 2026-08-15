@@ -95,10 +95,9 @@ It allows us to define:
 
 **Step 3 : User Module**
 
-
-
 After setting up error handling, we implemented the **User Module**.
-The User Module is responsible for managing user registration, login, logout, and profile-related operations.
+
+The User Module is responsible for managing users, authentication, user roles, and role-based access control.
 
 **1. Create User Model**
 
@@ -107,7 +106,20 @@ Created:
 `models/user.model.js`
 
 The User Model defines the structure of user data that will be stored in MongoDB.
-It also contains the functionality required for password handling and JWT token generation.
+
+The model supports three user roles:
+
+- `ADMIN`
+- `TEACHER`
+- `STUDENT`
+
+It also contains functionality for:
+
+- Password hashing
+- Password comparison
+- JWT token generation
+- Student-specific information
+- User data validation
 
 **2. Create User Controller**
 
@@ -116,15 +128,24 @@ Created:
 `controllers/user.controller.js`
 
 The User Controller contains the logic for handling user-related operations.
+
 Currently, it handles:
 
-- User registration
 - User login
 - User logout
 - Fetching the logged-in user's profile
+- Creating students
+- Creating teachers
 - Checking whether the email already exists
+- Checking whether the student roll number already exists
 - Generating JWT authentication tokens
 - Setting authentication cookies
+
+When creating a student, the role is automatically assigned as `STUDENT`.
+
+When creating a teacher, the role is automatically assigned as `TEACHER`.
+
+The user cannot decide their role while creating the account.
 
 **3. Create User Routes**
 
@@ -133,12 +154,26 @@ Created:
 `routes/user.routes.js`
 
 The User Routes define the API endpoints for user-related operations.
-Currently, the following routes are implemented:
 
-- `POST /register` — Register a new user
+### Public Routes
+
+These routes can be accessed without authentication:
+
 - `POST /login` — Login an existing user
 - `GET /logout` — Logout the current user
+
+### Protected Routes
+
+This route requires the user to be logged in:
+
 - `GET /me` — Get the profile of the logged-in user
+
+### Admin Routes
+
+These routes require the user to be logged in and have the `ADMIN` role:
+
+- `POST /createStudent` — Create a new student
+- `POST /createTeacher` — Create a new teacher
 
 **4. Create Authentication Middleware**
 
@@ -146,17 +181,50 @@ Created:
 
 `middlewares/auth.middleware.js`
 
-The authentication middleware is used to protect routes that require the user to be logged in.
+The `isLoggedIn` middleware is used to verify whether the user is authenticated.
+
 It checks for the JWT token stored in the user's cookie and verifies the token using the JWT secret.
-If the token is valid, the user's information is attached to the request and the request is allowed to continue.
-If the token is missing, an authentication error is returned.
 
-**5. User Authentication Flow**
+If the token is valid, the user's information is attached to the request through `req.user`.
 
-The current authentication flow works as follows:
+**5. Create Role Authorization Middleware**
 
-`Register → Generate JWT → Store Token in Cookie`
+Added:
+
+`authorizeRoles()`
+
+The `authorizeRoles` middleware is responsible for checking whether the authenticated user has permission to access a particular resource.
+
+It checks the user's role from `req.user.role`.
+
+If the user's role is allowed, the request continues to the controller.
+
+If the user's role is not allowed, the request is rejected with a `403` authorization error.
+
+The authorization flow is:
+
+`Request → isLoggedIn → authorizeRoles → Controller`
+
+**6. Role-Based Access Control**
+
+The current system supports the following roles:
+
+| Role | Access |
+|---|---|
+| `ADMIN` | Can create students and teachers |
+| `TEACHER` | Cannot access admin-only routes |
+| `STUDENT` | Cannot access admin-only routes |
+
+This prevents users from accessing resources that are not permitted for their role.
+
+**7. Authentication and Authorization Flow**
+
+The current authentication and authorization flow works as follows:
 
 `Login → Verify Credentials → Generate JWT → Store Token in Cookie`
 
-`Protected Route → Verify Token → Access User Profile`
+For protected resources:
+
+`Request → Verify JWT → Identify User → Check Role → Allow/Deny Access`
+
+The User Module now provides the foundation for **authentication and role-based authorization** in the application.
