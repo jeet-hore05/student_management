@@ -52,7 +52,13 @@ MongoDB will be used to store the data required by the Student Management System
 
 We use Mongoose to establish a connection between our Node.js backend and MongoDB.
 
+
+
+
 **Step 2 : Setup Error Handling**
+
+
+
 
 To handle errors properly throughout the application, we created a centralized error-handling system.
 
@@ -83,3 +89,74 @@ It allows us to define:
 - Custom error messages
 - HTTP status codes
 - Error stack traces
+
+
+
+
+**Step 3 : User Module**
+
+
+
+After setting up error handling, we implemented the **User Module**.
+The User Module is responsible for managing user registration, login, logout, and profile-related operations.
+
+**1. Create User Model**
+
+Created:
+
+`models/user.model.js`
+
+The User Model defines the structure of user data that will be stored in MongoDB.
+It also contains the functionality required for password handling and JWT token generation.
+
+**2. Create User Controller**
+
+Created:
+
+`controllers/user.controller.js`
+
+The User Controller contains the logic for handling user-related operations.
+Currently, it handles:
+
+- User registration
+- User login
+- User logout
+- Fetching the logged-in user's profile
+- Checking whether the email already exists
+- Generating JWT authentication tokens
+- Setting authentication cookies
+
+**3. Create User Routes**
+
+Created:
+
+`routes/user.routes.js`
+
+The User Routes define the API endpoints for user-related operations.
+Currently, the following routes are implemented:
+
+- `POST /register` — Register a new user
+- `POST /login` — Login an existing user
+- `GET /logout` — Logout the current user
+- `GET /me` — Get the profile of the logged-in user
+
+**4. Create Authentication Middleware**
+
+Created:
+
+`middlewares/auth.middleware.js`
+
+The authentication middleware is used to protect routes that require the user to be logged in.
+It checks for the JWT token stored in the user's cookie and verifies the token using the JWT secret.
+If the token is valid, the user's information is attached to the request and the request is allowed to continue.
+If the token is missing, an authentication error is returned.
+
+**5. User Authentication Flow**
+
+The current authentication flow works as follows:
+
+`Register → Generate JWT → Store Token in Cookie`
+
+`Login → Verify Credentials → Generate JWT → Store Token in Cookie`
+
+`Protected Route → Verify Token → Access User Profile`
