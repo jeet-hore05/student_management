@@ -1,5 +1,7 @@
 import User from "../models/user.model.js";
 import AppError from "../utils/error.util.js";
+import cloudinary from "cloudinary";
+import fs from "fs/promises";
 
 
 const cookieOptions = {
@@ -89,6 +91,30 @@ const createStudent = async(req,res,next)=>{
         }
 
         //TODO : File upload
+        if(req.file){
+        try{
+            const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                folder : "student",
+                width : 250,
+                height : 250,
+                gravity : "faces",
+                crop : "fill"
+            });
+
+            if(result) {
+                student.avatar.public_id = result.public_id;
+                student.avatar.secure_url = result.secure_url;
+
+                await student.save();
+                // remove file from server
+                await fs.rm(`uploads/${req.file.filename}`)
+            }
+        }catch(error){
+            return next(
+                new AppError(error.message || "File not uploaded, please try again.",500)
+            )
+        }
+    }
 
 
         // Remove password from response
@@ -103,7 +129,7 @@ const createStudent = async(req,res,next)=>{
 
     } catch(error){
         return next(
-            new AppError(e.message, 500)
+            new AppError(error.message, 500)
         );
     }
 };
@@ -164,6 +190,32 @@ const createTeacher = async (req, res, next) => {
         }
 
         // TODO : File upload
+
+        if(req.file){
+        try{
+            const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                folder : "student",
+                width : 250,
+                height : 250,
+                gravity : "faces",
+                crop : "fill"
+            });
+
+            if(result) {
+                teacher.avatar.public_id = result.public_id;
+                teacher.avatar.secure_url = result.secure_url;
+
+                await student.save();
+                // remove file from server
+                await fs.rm(`uploads/${req.file.filename}`)
+            }
+        }catch(error){
+            return next(
+                new AppError(error.message || "File not uploaded, please try again.",500)
+            )
+        }
+    }
+
 
 
         teacher.password = undefined;
