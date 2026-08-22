@@ -89,6 +89,20 @@ userSchema.methods = {  //Generate JWT Token
 
     comparePassword : async function(plainTextPassword){
         return await bcrypt.compare(plainTextPassword, this.password);
+    },
+
+    generatePasswordResetToken : async function() {
+        const resetToken = crypto.randomBytes(20).toString("hex");
+
+        this.forgotPasswordToken = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex")
+        ;    
+
+        this.forgotPasswordExpiry = Date.now()+ 15*60*1000 // 15 min from now
+
+        return resetToken;
     }
 }
 

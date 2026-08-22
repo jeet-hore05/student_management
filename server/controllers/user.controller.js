@@ -2,6 +2,8 @@ import User from "../models/user.model.js";
 import AppError from "../utils/error.util.js";
 import cloudinary from "cloudinary";
 import fs from "fs/promises";
+import crypto from "crypto";
+import sendEmail from "../utils/sendEmail.js";
 
 
 const cookieOptions = {
@@ -301,10 +303,81 @@ const getProfile = async(req,res)=>{
 };
 
 
+const forgotPassword = async (req,res,next)=>{
+    const {email}= req.body;
+    if(!email){
+        return next(new AppError("Email is required",400));
+    }
+
+    const user = await User.findOne({email});
+    if(!user){
+        return next(new AppError("Email is not registered.",400));
+    }
+
+    const resetToken = await user.generatePasswordResetToken();
+
+    await user.save();
+
+    const resetPasswordURL = `${process.env.FRONTEND_URL}/reset/${resetToken}`;
+
+    console.log(resetPasswordURL);
+    const subject = "Reset Password";
+    const message = `You can reset your password by clicking <a href =${resetPasswordURL} target="_blank">Reset your password</a>\n If the above link does not work for some reason then copy & paste the link in new tab ${resetPasswordURL}.\n If you have not requested this, kindly ignore.`;
+
+    try{
+        await sendEmail(email,subject,message);
+
+        res.status(200).json({
+            success:true,
+            message :`Reset password token has been sent to ${email} successfully.`
+        })
+    } catch(e){
+        user.forgotPasswordExpiry = undefined;
+        user.forgotPasswordToken = undefined;
+
+        return next(new AppError(e.message,500));
+    }
+};
+
+const resetPassword = async (req,res,next)=>{
+    const { resetToken } = req.params;
+
+    const { password } = req.body;
+
+    const forgotPasswordToken = crypto
+                .createHash("sha256")
+                .update(resetToken)
+                .digest("hex")
+            ;    
+    
+    const user = await User.findOne({
+        forgotPasswordToken,
+        forgotPasswordExpiry : { $gt : Date.now() }
+    })
+
+    if(!user) {
+        return next(new AppError("Token is invalid or expired, please try again.",400));
+    }
+
+    user.password=password;
+
+    user.forgotPasswordToken=undefined;
+    user.forgotPasswordExpiry=undefined;
+
+    await user.save();
+
+    res.status(200).json({
+        success:true,
+        message : "Password changed successfully."
+    })
+};
+
 export {
     createStudent,
     createTeacher,
     login,
     logout,
-    getProfile
+    getProfile,
+    forgotPassword,
+    resetPassword
 }
