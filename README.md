@@ -228,3 +228,99 @@ For protected resources:
 `Request → Verify JWT → Identify User → Check Role → Allow/Deny Access`
 
 The User Module now provides the foundation for **authentication and role-based authorization** in the application.
+
+**8. File Upload and Password Management**
+
+After implementing authentication and role-based authorization, we added **file upload** and **password management** functionality to the User Module.
+
+**1. Implement File Upload**
+
+File upload functionality was added to the user creation process.
+
+When creating a student or teacher, an optional profile image can be uploaded.
+
+The uploaded image is:
+
+- Validated by the Multer middleware
+- Uploaded to Cloudinary
+- Resized to `250 × 250`
+- Cropped based on the detected face
+- Stored in the user's avatar information
+- Removed from the local `uploads/` directory after successful upload
+
+The user's avatar stores both the Cloudinary `public_id` and `secure_url`.
+
+**2. Implement Forgot Password**
+
+Added:
+
+`forgotPassword`
+
+The forgot password functionality allows a user to request a password reset using their registered email address.
+
+The process:
+
+`Email → Generate Reset Token → Save Token → Create Reset URL → Send Email`
+
+The reset link is sent to the user's registered email using the email utility.
+
+**3. Implement Reset Password**
+
+Added:
+
+`resetPassword`
+
+The reset password functionality allows the user to set a new password using the reset token received through email.
+
+The reset token is hashed and matched with the stored token.
+
+The token is also checked for expiry before allowing the password to be changed.
+
+After successfully changing the password, the reset token and its expiry are removed.
+
+**4. Implement Change Password**
+
+Added:
+
+`changePassword`
+
+The change password functionality is available to authenticated users.
+
+The process verifies the user's current password before allowing a new password to be set.
+
+The new password is then saved and automatically hashed through the User Model's password hashing logic.
+
+**5. Email Utility**
+
+Created:
+
+`utils/sendEmail.js`
+
+The email utility uses **Nodemailer** and SMTP configuration from environment variables to send emails from the application.
+
+It is currently used for the forgot password functionality.
+
+**6. File Upload Middleware**
+
+Created:
+
+`middlewares/multer.middleware.js`
+
+Multer is used to handle image uploads before they are processed by the controller.
+
+The middleware:
+
+- Accepts `.jpg`, `.jpeg`, `.png`, and `.webp` files
+- Limits file size to 50 MB
+- Temporarily stores uploaded files in the `uploads/` directory
+- Rejects unsupported file types
+
+**7. Password Management Flow**
+
+Forgot password:
+
+`Forgot Password → Generate Token → Send Email → Reset Password`
+
+Change password:
+
+`Login → Verify Current Password → Set New Password`
