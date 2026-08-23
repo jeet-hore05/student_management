@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword } from "../controllers/user.controller.js";
+import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword, changePassword } from "../controllers/user.controller.js";
 import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 
@@ -13,6 +13,7 @@ router.post("/login", login);
 router.get("/logout", logout);
 router.post("/reset", forgotPassword);
 router.post("/reset/:resetToken", resetPassword);
+router.post("/change-password", isLoggedIn, changePassword);
 
 // ADMIN routes
 

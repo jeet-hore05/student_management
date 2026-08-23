@@ -372,6 +372,37 @@ const resetPassword = async (req,res,next)=>{
     })
 };
 
+const changePassword = async(req,res,next) =>{
+    const {oldPassword, newPassword}= req.body;
+    const {id} = req.user;
+
+    if(!oldPassword || !newPassword){
+        return next(new AppError("All fields are mandatory",400));
+    }
+
+    const user = await User.findById(id).select("+password");
+
+    if(!user){
+        return next(new AppError("User does not exist.",400));
+    }
+
+    const isPasswordValid = await user.comparePassword(oldPassword);
+    if(!isPasswordValid){
+        return next(new AppError("Invalid old password",400));
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    user.password = undefined;
+
+    res.status(200).json({
+        success:true,
+        message:"Password changed successfully."
+    });
+}
+
 export {
     createStudent,
     createTeacher,
@@ -379,5 +410,6 @@ export {
     logout,
     getProfile,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    changePassword
 }
