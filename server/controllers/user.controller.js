@@ -5,6 +5,8 @@ import fs from "fs/promises";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 
+import Department from "../models/department.model.js";
+
 
 const cookieOptions = {
     maxAge : 7*24*60*60*1000,  // 7 days
@@ -24,7 +26,8 @@ const createStudent = async(req,res,next)=>{
             password,
             rollNumber,
             department,
-            semester
+            semester,
+            section
         } = req.body;
 
         // Check required fields
@@ -34,7 +37,8 @@ const createStudent = async(req,res,next)=>{
             !password ||
             !rollNumber ||
             !department ||
-            !semester
+            !semester ||
+            !section
         ) {
             return next(
                 new AppError("All fields are required", 400)
@@ -61,6 +65,13 @@ const createStudent = async(req,res,next)=>{
             );
         }
 
+        const departmentExists = await Department.findById(department);
+        if (departmentExists) {
+            return next(
+                new AppError("Department does not exist.", 404)
+            );
+        }
+
         // Create student
         const student = await User.create({
 
@@ -76,6 +87,7 @@ const createStudent = async(req,res,next)=>{
             rollNumber,
             department,
             semester,
+            section,
 
             avatar: {
                 public_id: email,
@@ -146,11 +158,13 @@ const createTeacher = async (req, res, next) => {
         const {
             fullName,
             email,
-            password
+            password,
+            employeeId,
+            department
         } = req.body;
 
 
-        if (!fullName || !email || !password) {
+        if (!fullName || !email || !password || !employeeId || !department) {
             return next(
                 new AppError("All fields are required", 400)
             );
@@ -165,6 +179,34 @@ const createTeacher = async (req, res, next) => {
             );
         }
 
+         const employeeExists = await User.findOne({
+            employeeId
+        });
+
+        if (employeeExists) {
+
+            return next(
+                new AppError(
+                    "Employee ID already exists.",
+                    400
+                )
+            );
+        }
+
+        const departmentExists = await Department.findById(
+            department
+        );
+
+        if (!departmentExists) {
+
+            return next(
+                new AppError(
+                    "Department does not exist.",
+                    404
+                )
+            );
+        }
+
 
         // Create teacher
         const teacher = await User.create({
@@ -175,6 +217,9 @@ const createTeacher = async (req, res, next) => {
 
             // Role is decided by admin/controller
             role: "TEACHER",
+
+            employeeId,
+            department,
 
             avatar: {
                 public_id: email,
@@ -255,6 +300,15 @@ const login = async(req,res,next)=>{
             return next(new AppError("Email or password does not match.",400));
         }   
 
+        if (!user.isActive) {
+
+            return next(
+                new AppError(
+                    "Your account has been deactivated. Please contact the administrator.",
+                    403
+                )
+            );
+        }
         const token = await user.generateJWTToken();
         user.password = undefined;
 
@@ -289,7 +343,9 @@ const getProfile = async(req,res)=>{
     try{
         const userId = req.user.id;
 
-        const user = await User.findById(userId);
+        const user = await User
+        .findById(userId)
+        .populate("department");
 
         res.status(200).json({
             success : true,

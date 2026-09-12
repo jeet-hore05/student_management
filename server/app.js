@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import {config} from "dotenv";
 
 import userRoutes from "./routes/user.routes.js";
+import allotmentRoutes from "./routes/allotment.routes.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/allotment", allotmentRoutes);
 
 
 app.use("/ping", function(req,res){
