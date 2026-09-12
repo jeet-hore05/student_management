@@ -370,3 +370,53 @@ The department allotment process works as follows:
 `Admin Request → Allotment Route → Allotment Controller → Department/User Data → MongoDB`
 
 The department information can then be used by other modules of the Student Management System, such as **attendance, subjects, and routine management**.
+
+**Step 5 : Subject Module**
+
+After completing the Department Allotment Module, we implemented the **Subject Module**.
+
+This module is used to create and manage subjects that are assigned to different departments in the Student Management System.
+
+**1. Create Subject Model**
+
+Created:
+
+`models/subject.model.js`
+
+The Subject Model defines the structure of subject information that will be stored in MongoDB.
+
+It stores the required details of a subject and maintains its relationship with the corresponding department.
+
+**2. Create Subject Controller**
+
+Created:
+
+`controllers/subject.controller.js`
+
+The Subject Controller contains the logic for handling subject-related operations.
+
+It is responsible for:
+
+* Creating subjects
+* Validating subject information
+* Checking the associated department
+* Storing subject information in MongoDB
+* Retrieving subject information
+
+**3. Create Subject Routes**
+
+Created:
+
+`routes/subject.routes.js`
+
+The Subject Routes define the API endpoints used for subject-related operations.
+
+These routes connect incoming requests to the corresponding controller functions.
+
+**4. Subject Module Flow**
+
+The subject management process works as follows:
+
+`Request → Subject Route → Subject Controller → Subject Model → MongoDB`
+
+The subject information created through this module can later be used by other modules such as **attendance and routine management**.
