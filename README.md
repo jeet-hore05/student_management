@@ -324,3 +324,49 @@ Forgot password:
 Change password:
 
 `Login → Verify Current Password → Set New Password`
+
+
+
+**Step 4 : Department Allotment Module**
+
+After completing the User Module, we implemented the **Department Allotment Module**.
+
+This module is used to assign students and teachers to their respective departments and maintain department-related information.
+
+**1. Create Department Model**
+
+Created:
+
+`models/department.model.js`
+
+The Department Model defines the structure of department information that will be stored in MongoDB.
+
+It is used to store and manage department details required for student and teacher allotment.
+
+**2. Create Department Allotment Controller**
+
+Created:
+
+`controllers/allotment.controller.js`
+
+The Allotment Controller contains the logic for assigning users to departments.
+
+It handles department allotment according to the user's role and maintains the required relationship between users and departments.
+
+**3. Create Department Allotment Routes**
+
+Created:
+
+`routes/allotment.routes.js`
+
+The Allotment Routes define the API endpoints used for department-related allotment operations.
+
+These routes connect incoming requests with the corresponding allotment controller functions.
+
+**4. Department Allotment Flow**
+
+The department allotment process works as follows:
+
+`Admin Request → Allotment Route → Allotment Controller → Department/User Data → MongoDB`
+
+The department information can then be used by other modules of the Student Management System, such as **attendance, subjects, and routine management**.
