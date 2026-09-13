@@ -420,3 +420,55 @@ The subject management process works as follows:
 `Request → Subject Route → Subject Controller → Subject Model → MongoDB`
 
 The subject information created through this module can later be used by other modules such as **attendance and routine management**.
+
+
+**Step 6 : Routine Module**
+
+After completing the Subject Module, we implemented the **Routine Module**.
+
+This module is used to create and manage the weekly class routine for students and teachers.
+
+**1. Create Routine Model**
+
+Created:
+
+`models/routine.model.js`
+
+The Routine Model defines the structure of routine information that will be stored in MongoDB.
+
+It stores the required details of a class, such as the subject, teacher, department, day, time, and other routine-related information.
+
+**2. Create Routine Controller**
+
+Created:
+
+`controllers/routine.controller.js`
+
+The Routine Controller contains the logic for handling routine-related operations.
+
+It is responsible for:
+
+* Creating routine entries
+* Validating routine information
+* Checking the associated subject and department
+* Assigning teachers to classes
+* Storing routine information in MongoDB
+* Retrieving routine information
+
+**3. Create Routine Routes**
+
+Created:
+
+`routes/routine.routes.js`
+
+The Routine Routes define the API endpoints used for routine-related operations.
+
+These routes connect incoming requests to the corresponding controller functions.
+
+**4. Routine Module Flow**
+
+The routine management process works as follows:
+
+`Request → Routine Route → Routine Controller → Routine Model → MongoDB`
+
+The routine information created through this module can later be used to display the weekly class schedule and support other modules such as **attendance management**.
