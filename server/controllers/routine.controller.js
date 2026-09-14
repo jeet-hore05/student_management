@@ -155,7 +155,7 @@ const getAllRoutines = async (req, res, next) => {
     });
 
   } catch (error) {
-    return next(error);
+    return next(new AppError(error.message, 500));
   }
 };
 
@@ -212,7 +212,7 @@ const getRoutine = async (req, res, next) => {
     });
 
   } catch (error) {
-    return next(error);
+    return next(new AppError(error.message, 500));
   }
 };
 
@@ -261,7 +261,7 @@ const getRoutineByDay = async (req, res, next) => {
     });
 
   } catch (error) {
-    return next(error);
+    return next(new AppError(error.message, 500));
   }
 };
 
@@ -361,7 +361,7 @@ const updateRoutine = async (req, res, next) => {
     });
 
   } catch (error) {
-    return next(error);
+    return next(new AppError(error.message, 500));
   }
 };
 
@@ -389,7 +389,7 @@ const deleteRoutine = async (req, res, next) => {
     });
 
   } catch (error) {
-    return next(error);
+    return next(new AppError(error.message, 500));
   }
 };
 
