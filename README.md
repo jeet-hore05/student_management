@@ -472,3 +472,54 @@ The routine management process works as follows:
 `Request → Routine Route → Routine Controller → Routine Model → MongoDB`
 
 The routine information created through this module can later be used to display the weekly class schedule and support other modules such as **attendance management**.
+
+
+**Step 7 : Attendance Module**
+
+After completing the Routine Module, we implemented the **Attendance Module**.
+
+This module is used to record and manage student attendance based on their classes and subjects.
+
+**1. Create Attendance Model**
+
+Created:
+
+`models/attendance.model.js`
+
+The Attendance Model defines the structure of attendance information that will be stored in MongoDB.
+
+It stores the required details related to the student, subject, class, date, and attendance status.
+
+**2. Create Attendance Controller**
+
+Created:
+
+`controllers/attendance.controller.js`
+
+The Attendance Controller contains the logic for handling attendance-related operations.
+
+It is responsible for:
+
+* Recording student attendance
+* Validating attendance information
+* Checking the associated student and subject
+* Updating attendance records
+* Retrieving attendance information
+
+**3. Create Attendance Routes**
+
+Created:
+
+`routes/attendance.routes.js`
+
+The Attendance Routes define the API endpoints used for attendance-related operations.
+
+These routes connect incoming requests to the corresponding controller functions.
+
+**4. Attendance Module Flow**
+
+The attendance management process works as follows:
+
+`Request → Attendance Route → Attendance Controller → Attendance Model → MongoDB`
+
+The attendance records can later be used to view and manage student attendance based on subjects and classes.
