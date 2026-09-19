@@ -564,3 +564,114 @@ The view process works as follows:
 `Request → View Route → View Controller → Database Models → Response`
 
 The View Module brings together information from the **User, Subject, Routine, and Attendance** modules so that the required academic information can be displayed to t
+
+
+**Step 9 : Frontend Setup**
+
+After completing the backend modules, we started setting up the **frontend** of the Student Management System.
+
+The frontend is developed using **React.js with Vite** and **Tailwind CSS**.
+
+**1. Create the Client Directory**
+
+We create a separate `client` directory for all frontend-related code.
+
+```bash
+mkdir client
+cd client
+```
+
+**2. Create React Application**
+
+Inside the `client` directory, we create the React application using Vite.
+
+```bash
+npm create vite@latest
+```
+
+During the setup, select:
+
+* Framework: `React`
+* Variant: `JavaScript`
+
+After creating the project:
+
+```bash
+cd client
+npm install
+```
+
+**3. Run the React Application**
+
+Before installing additional libraries, we first check whether the React application is working correctly.
+
+```bash
+npm run dev
+```
+
+This starts the Vite development server.
+
+**4. Setup Tailwind CSS**
+
+Install Tailwind CSS and its Vite integration:
+
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+Update:
+
+`vite.config.js`
+
+Add the Tailwind CSS Vite plugin to the configuration.
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+})
+```
+
+Then update:
+
+`src/index.css`
+
+```css
+@import "tailwindcss";
+@plugin "daisyui";
+```
+
+This enables Tailwind CSS in the React application.
+
+**5. Install Frontend Libraries**
+
+After setting up React and Tailwind CSS, we install the libraries required for the application.
+
+```bash
+npm install @reduxjs/toolkit react-router-dom react-icons react-chartjs-2 chart.js daisyui axios react-hot-toast
+```
+
+These libraries are used for different frontend requirements:
+
+* `@reduxjs/toolkit` — State management
+* `react-router-dom` — Frontend routing and navigation
+* `react-icons` — Icons in the user interface
+* `react-chartjs-2` — React components for charts
+* `chart.js` — Chart generation
+* `daisyui` — UI components built on top of Tailwind CSS
+* `axios` — Communication with the backend API
+* `react-hot-toast` — Displaying notification messages
+
+**6. Frontend Setup Flow**
+
+The frontend setup process is:
+
+`Create Client → Create React App with Vite → Install Dependencies → Run React → Setup Tailwind CSS → Install Frontend Libraries`
+
+At this stage, the basic frontend environment is ready for developing the application's **pages, components, navigation, state management, API communication, charts, icons, UI components, and notifications**.
