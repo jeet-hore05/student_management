@@ -523,3 +523,44 @@ The attendance management process works as follows:
 `Request → Attendance Route → Attendance Controller → Attendance Model → MongoDB`
 
 The attendance records can later be used to view and manage student attendance based on subjects and classes.
+
+
+**Step 8 : View Module**
+
+After completing the Attendance Module, we implemented the **View Module**.
+
+This module is used to retrieve and display the information stored in different modules of the Student Management System.
+
+**1. Create View Controller**
+
+Created:
+
+`controllers/view.controller.js`
+
+The View Controller contains the logic for retrieving the required information from the database.
+
+It is responsible for:
+
+* Retrieving student and teacher information
+* Retrieving subject information
+* Retrieving routine information
+* Retrieving attendance information
+* Sending the requested data to the client
+
+**2. Create View Routes**
+
+Created:
+
+`routes/view.routes.js`
+
+The View Routes define the API endpoints used to retrieve information from the system.
+
+These routes connect incoming requests to the corresponding view controller functions.
+
+**3. View Module Flow**
+
+The view process works as follows:
+
+`Request → View Route → View Controller → Database Models → Response`
+
+The View Module brings together information from the **User, Subject, Routine, and Attendance** modules so that the required academic information can be displayed to t
