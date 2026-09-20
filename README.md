@@ -675,3 +675,40 @@ The frontend setup process is:
 `Create Client → Create React App with Vite → Install Dependencies → Run React → Setup Tailwind CSS → Install Frontend Libraries`
 
 At this stage, the basic frontend environment is ready for developing the application's **pages, components, navigation, state management, API communication, charts, icons, UI components, and notifications**.
+
+
+**Step 10 : Redux Toolkit Setup**
+
+After setting up the frontend libraries, we implemented the basic **state management structure using Redux Toolkit**.
+
+Redux Toolkit will be used to manage and share application state across different React components.
+
+**1. Create Redux Store**
+
+Created the Redux store to manage the application's global state.
+
+The store acts as the central location where the Redux state is maintained.
+
+**2. Create Redux Slice**
+
+Created a slice using `createSlice` from `@reduxjs/toolkit`.
+
+The slice contains:
+
+* The initial state
+* The slice name
+* Reducers for managing state changes
+
+At this stage, the basic slice structure has been created and no specific application logic has been added yet.
+
+**3. Configure Redux Provider**
+
+The Redux store is connected to the React application using the `Provider`.
+
+This makes the Redux store available to the React component tree.
+
+The basic Redux flow is:
+
+`React Component → Redux Action → Reducer → Store → Updated State`
+
+At this stage, the basic **Redux Toolkit setup** is complete and ready for implementing application-specific state management.
