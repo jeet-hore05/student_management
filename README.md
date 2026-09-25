@@ -712,3 +712,36 @@ The basic Redux flow is:
 `React Component → Redux Action → Reducer → Store → Updated State`
 
 At this stage, the basic **Redux Toolkit setup** is complete and ready for implementing application-specific state management.
+
+
+**Step 11 : Axios Instance Setup**
+
+After setting up Redux Toolkit, we implemented a reusable **Axios instance** for communicating with the backend API.
+
+**1. Create Axios Instance**
+
+Created:
+
+`Helper/axiosInstance.js`
+
+Instead of creating a new Axios configuration for every API request, we created a common Axios instance that can be reused throughout the application.
+
+**2. Configure Backend URL**
+
+The Axios instance is configured with the backend API's base URL.
+
+This allows us to make API requests using relative endpoints instead of repeatedly writing the complete backend URL.
+
+**3. Configure Credentials**
+
+`withCredentials` is enabled so that cookies, including the authentication cookie, can be sent with requests to the backend.
+
+This is required because the application uses cookie-based authentication.
+
+**4. Axios Flow**
+
+The frontend API communication works as follows:
+
+`React Component → Axios Instance → Backend API → Response`
+
+The Axios instance is now ready to be used by different frontend modules for communicating with the backend.
