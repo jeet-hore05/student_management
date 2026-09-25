@@ -681,15 +681,30 @@ At this stage, the basic frontend environment is ready for developing the applic
 
 After setting up the frontend libraries, we implemented the basic **state management structure using Redux Toolkit**.
 
-Redux Toolkit will be used to manage and share application state across different React components.
+Redux Toolkit is used to manage and share application state across different React components.
 
-**1. Create Redux Store**
+**1. Install Redux Dependencies**
+
+The required Redux packages are installed using:
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+These packages are used for different purposes:
+
+* `@reduxjs/toolkit` — Provides tools such as `configureStore` and `createSlice` for creating and managing the Redux store.
+* `react-redux` — Connects Redux with React and provides components/hooks such as `Provider`, `useSelector`, and `useDispatch`.
+
+**2. Create Redux Store**
 
 Created the Redux store to manage the application's global state.
 
 The store acts as the central location where the Redux state is maintained.
 
-**2. Create Redux Slice**
+The store is configured using `configureStore` from `@reduxjs/toolkit`.
+
+**3. Create Redux Slice**
 
 Created a slice using `createSlice` from `@reduxjs/toolkit`.
 
@@ -701,17 +716,18 @@ The slice contains:
 
 At this stage, the basic slice structure has been created and no specific application logic has been added yet.
 
-**3. Configure Redux Provider**
+**4. Configure Redux Provider**
 
-The Redux store is connected to the React application using the `Provider`.
+The Redux store is connected to the React application using the `Provider` component from `react-redux`.
 
-This makes the Redux store available to the React component tree.
+The `Provider` makes the Redux store available to the entire React component tree.
 
 The basic Redux flow is:
 
 `React Component → Redux Action → Reducer → Store → Updated State`
 
 At this stage, the basic **Redux Toolkit setup** is complete and ready for implementing application-specific state management.
+
 
 
 **Step 11 : Axios Instance Setup**
