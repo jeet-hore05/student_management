@@ -761,3 +761,32 @@ The frontend API communication works as follows:
 `React Component → Axios Instance → Backend API → Response`
 
 The Axios instance is now ready to be used by different frontend modules for communicating with the backend.
+
+
+**Step 12 : Footer Component**
+
+After setting up Axios, we implemented the **Footer Component** for the frontend.
+
+**1. Create Footer Component**
+
+Created:
+
+`Components/Footer.jsx`
+
+The Footer component contains the common footer section of the application.
+
+It is created as a reusable component so that the same footer can be used across different pages of the application.
+
+**2. Add Footer Styling**
+
+The Footer component is styled using **Tailwind CSS** to provide the required layout and responsive design.
+
+**3. Use Footer Component**
+
+The Footer component can be imported into the required layout or page and rendered as part of the application's common UI.
+
+The basic component structure is:
+
+`Page/Layout → Footer Component`
+
+The Footer component is now ready to be reused throughout the frontend application.
