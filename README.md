@@ -790,3 +790,45 @@ The basic component structure is:
 `Page/Layout → Footer Component`
 
 The Footer component is now ready to be reused throughout the frontend application.
+
+**Step 13 : Homepage, HomeLayout and Redux Slice**
+
+After implementing the Footer component, we developed the **Homepage**, created the **HomeLayout**, and extended Redux Toolkit state management for the frontend.
+
+**1. Create Homepage**
+
+Created the homepage component to serve as the main landing page of the Student Management System.
+
+The homepage provides the initial interface through which users can access the application.
+
+It is designed using React and Tailwind CSS with a responsive layout for mobile, tablet, and desktop screens.
+
+**2. Create HomeLayout**
+
+Created the HomeLayout component to manage the common layout of the homepage.
+
+It provides a structured way to organize the main page content and reusable components, such as the Footer.
+
+This helps maintain a consistent layout and avoids repeating common UI elements.
+
+**3. Update Redux Slice**
+
+Updated the Redux slice to manage the state required by the frontend.
+
+The slice defines the initial state and reducers used to handle state changes.
+
+This allows React components to access and update shared application state through Redux Toolkit.
+
+**4. Integrate the Components**
+
+The Homepage and HomeLayout work together to organize the main landing page, while Redux Toolkit manages the shared state required by the application.
+
+The overall structure is:
+
+`Homepage → HomeLayout → Page Content + Footer`
+
+The Redux flow is:
+
+`React Component → Redux Action → Reducer → Store → Updated State`
+
+At this stage, the homepage structure, common layout, and Redux state management are in place for further frontend development.
