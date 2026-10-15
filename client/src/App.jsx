@@ -4,6 +4,7 @@ import Footer from "./Components/Footer.jsx";
 
 import './App.css';
 import HomePage from "./Pages/HomePage.jsx";
+import LoginPage from "./Pages/LoginPage.jsx";
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
     <>
       <Routes>
       <Route path="/" element={<HomePage/>}/>
+      <Route path="/login" element={<LoginPage />} />
       </Routes>
     </>
   )

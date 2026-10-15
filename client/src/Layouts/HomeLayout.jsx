@@ -85,7 +85,7 @@ function HomeLayout({ children }) {
             ) : (
               <>
                 <Link
-                  to="/signup"
+                  to="/login"
                   className="rounded-lg border border-yellow-500 px-4 py-2 text-yellow-500 transition-all duration-300 hover:bg-yellow-500 hover:text-gray-900"
                 >
                   Sign Up
