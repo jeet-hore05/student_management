@@ -31,7 +31,7 @@ const createDepartment = async(req,res,next) =>{
         const department = await Department.create({
             name : name.trim(),
             code : code.toUpperCase().trim(),
-            description  : description?.description.trim()
+            description: description.trim()
         });
 
         if(!department) {
@@ -85,7 +85,7 @@ const allotStudent = async (req, res, next) => {
         student.semester = semester;
         student.section = section;
 
-        await studet.save();
+        await student.save();
 
         const updatedStudent = await User
             .findById(student._id)
@@ -269,10 +269,27 @@ const getDepartmentTeachers = async (req, res, next) => {
     }
 };
 
+const getAllDepartments = async (req, res, next) => {
+    try {
+        const departments = await Department.find()
+            .sort({ name: 1 });
+
+        res.status(200).json({
+            success: true,
+            message: "Departments fetched successfully.",
+            count: departments.length,
+            departments
+        });
+    } catch (error) {
+        return next(new AppError(error.message, 500));
+    }
+};
+
 export {
     createDepartment,
     allotStudent,
     allotTeacher,
     getDepartmentStudents,
-    getDepartmentTeachers
+    getDepartmentTeachers,
+    getAllDepartments
 };

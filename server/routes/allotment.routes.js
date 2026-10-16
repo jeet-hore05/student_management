@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createDepartment,allotStudent, allotTeacher, getDepartmentStudents, getDepartmentTeachers } from "../controllers/allotment.controller.js";
+import { createDepartment,allotStudent, allotTeacher, getDepartmentStudents, getDepartmentTeachers, getAllDepartments } from "../controllers/allotment.controller.js";
 import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -12,5 +12,12 @@ router.post("/teacher", isLoggedIn, authorizeRoles("ADMIN"), allotTeacher);
 router.get("/students", isLoggedIn, authorizeRoles("ADMIN","TEACHER"), getDepartmentStudents);
 //get teachers of a dept.
 router.get("/teachers", isLoggedIn, authorizeRoles("ADMIN"), getDepartmentTeachers);
+
+router.get(
+    "/departments",
+    isLoggedIn,
+    authorizeRoles("ADMIN", "TEACHER"),
+    getAllDepartments
+);
 
 export default router;
