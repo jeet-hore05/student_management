@@ -8,6 +8,7 @@ import LoginPage from "./Pages/LoginPage.jsx";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./Pages/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./Pages/ChangePasswordPage.jsx";
+import Profile from "./Pages/Profile.jsx";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         path="/change-password"
         element={<ChangePasswordPage />}
       />
+      <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   )
