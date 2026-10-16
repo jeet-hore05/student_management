@@ -66,7 +66,7 @@ const createStudent = async (req, res, next) => {
         }
 
         const departmentExists = await Department.findById(department);
-        if (departmentExists) {
+        if (!departmentExists) {
             return next(
                 new AppError("Department does not exist.", 404)
             );

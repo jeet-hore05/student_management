@@ -9,6 +9,9 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./Pages/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./Pages/ChangePasswordPage.jsx";
 import Profile from "./Pages/Profile.jsx";
+import Allotment from "./Pages/Allotment.jsx";
+import Students from "./Pages/Students.jsx";
+import Departments from "./Pages/Departments.jsx";
 
 function App() {
 
@@ -27,6 +30,10 @@ function App() {
         element={<ChangePasswordPage />}
       />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/allotment" element={<Allotment />} />
+      <Route path="/students" element={<Students/>}/>
+      <Route path="/departments" element={<Departments />} />
+
       </Routes>
     </>
   )
