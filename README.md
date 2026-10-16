@@ -888,3 +888,45 @@ For authenticated users:
 `Change Password → Verify Current Password → Update Password`
 
 At this stage, the frontend supports the basic **login, forgot password, reset password, and change password** workflows.
+
+**Step 15 : Allotment, Student and Department Modules**
+
+After implementing authentication and password management, we developed the **Allotment, Student, and Department modules** in the frontend.
+
+**1. Implement Allotment Module**
+
+Created the allotment interface to manage department allotment for students and teachers.
+
+The module communicates with the backend using the configured Axios instance to perform the required allotment operations.
+
+It connects the user information with the relevant department according to the implemented backend functionality.
+
+**2. Implement Student Module**
+
+Created the Student Module to manage student-related information in the frontend.
+
+The module provides the interface for working with student records and communicating with the backend for the supported student operations.
+
+The student interface integrates with the existing authentication system and uses the configured Axios instance for API requests.
+
+**3. Implement Department Module**
+
+Created the Department Module to manage department-related information.
+
+The module provides the interface for displaying and managing departments through the corresponding backend APIs.
+
+It communicates with the backend using Axios to retrieve or submit department information.
+
+**4. Integrate with Redux and Backend APIs**
+
+Integrated the modules with the existing frontend structure and backend API.
+
+Axios is used for HTTP communication, while Redux Toolkit manages the shared application state where required.
+
+**5. Module Flow**
+
+The general data flow is:
+
+`React Component → Axios Instance → Backend Route → Controller → MongoDB → Response`
+
+These modules extend the frontend with department management, student management, and department allotment functionality.
