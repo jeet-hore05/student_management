@@ -832,3 +832,59 @@ The Redux flow is:
 `React Component → Redux Action → Reducer → Store → Updated State`
 
 At this stage, the homepage structure, common layout, and Redux state management are in place for further frontend development.
+
+**Step 14 : Authentication and Password Management**
+
+After setting up the Homepage, HomeLayout, and Redux state management, we implemented the frontend authentication and password management functionality.
+
+**1. Create Login Page**
+
+Created the login page to allow existing users to access the Student Management System using their registered email and password.
+
+The login form collects user credentials and sends them to the backend API using the configured Axios instance.
+
+**2. Manage Authentication State Using Redux**
+
+Integrated Redux Toolkit to manage authentication-related state in the frontend.
+
+This allows the application to maintain and access relevant user information across different React components.
+
+**3. Implement Forgot Password**
+
+Created the forgot password functionality to allow users to request a password reset using their registered email address.
+
+The frontend sends the user's email to the backend, which handles the password reset request.
+
+**4. Implement Reset Password**
+
+Created the reset password page to allow users to set a new password using the reset link received through email.
+
+The frontend submits the reset information to the backend, where the reset token is validated and the password is updated.
+
+**5. Implement Change Password**
+
+Implemented the change password functionality for authenticated users.
+
+The interface allows users to provide their current password and a new password. The information is sent to the backend, where the current password is verified before updating the password.
+
+**6. API Integration**
+
+Integrated the authentication and password management pages with the backend using Axios.
+
+The frontend communicates with the corresponding backend endpoints to process login, forgot password, reset password, and change password requests.
+
+**7. Authentication Flow**
+
+The implemented authentication flow is:
+
+`Login Page → Backend Authentication → Redux Authentication State`
+
+The password management flow is:
+
+`Forgot Password → Email Reset Link → Reset Password`
+
+For authenticated users:
+
+`Change Password → Verify Current Password → Update Password`
+
+At this stage, the frontend supports the basic **login, forgot password, reset password, and change password** workflows.
