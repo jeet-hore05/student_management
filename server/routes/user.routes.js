@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword, changePassword } from "../controllers/user.controller.js";
+import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword, changePassword, getAllStudents,getStudentById, updateStudent, deleteStudent } from "../controllers/user.controller.js";
 import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 
@@ -21,5 +21,34 @@ router.post("/createStudent", isLoggedIn,authorizeRoles("ADMIN"), upload.single(
 router.post("/createTeacher", isLoggedIn,authorizeRoles("ADMIN"),upload.single("avatar"), createTeacher);
 
 router.get("/me", isLoggedIn, getProfile);
+
+// Student management routes
+router.get(
+    "/students",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    getAllStudents
+);
+
+router.get(
+    "/students/:studentId",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    getStudentById
+);
+
+router.put(
+    "/students/:studentId",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    updateStudent
+);
+
+router.delete(
+    "/students/:studentId",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    deleteStudent
+);
 
 export default router;
