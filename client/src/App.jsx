@@ -7,6 +7,7 @@ import HomePage from "./Pages/HomePage.jsx";
 import LoginPage from "./Pages/LoginPage.jsx";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./Pages/ResetPasswordPage.jsx";
+import ChangePasswordPage from "./Pages/ChangePasswordPage.jsx";
 
 function App() {
 
@@ -19,6 +20,10 @@ function App() {
       <Route
         path="/reset/:resetToken"
         element={<ResetPasswordPage />}
+      />
+      <Route
+        path="/change-password"
+        element={<ChangePasswordPage />}
       />
       </Routes>
     </>
