@@ -3,6 +3,7 @@ import AppError from "../utils/error.util.js";
 import cloudinary from "cloudinary";
 import fs from "fs/promises";
 import crypto from "crypto";
+import mongoose from "mongoose";
 import sendEmail from "../utils/sendEmail.js";
 
 import Department from "../models/department.model.js";
@@ -247,7 +248,7 @@ const createTeacher = async (req, res, next) => {
         if (req.file) {
             try {
                 const result = await cloudinary.v2.uploader.upload(req.file.path, {
-                    folder: "student",
+                    folder: "teacher",
                     width: 250,
                     height: 250,
                     gravity: "faces",
@@ -258,7 +259,7 @@ const createTeacher = async (req, res, next) => {
                     teacher.avatar.public_id = result.public_id;
                     teacher.avatar.secure_url = result.secure_url;
 
-                    await student.save();
+                    await teacher.save();
                     // remove file from server
                     await fs.rm(`uploads/${req.file.filename}`)
                 }
@@ -682,6 +683,195 @@ const deleteStudent = async (req, res, next) => {
     }
 };
 
+// GET ALL TEACHERS
+const getAllTeachers = async (req, res, next) => {
+    try {
+        const teachers = await User.find({ role: "TEACHER" })
+            .select("-password -forgotPasswordToken -forgotPasswordExpiry")
+            .populate("department", "name code")
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "Teachers fetched successfully.",
+            count: teachers.length,
+            teachers
+        });
+    } catch (error) {
+        return next(new AppError(error.message, 500));
+    }
+};
+
+
+// UPDATE TEACHER
+const updateTeacher = async (req, res, next) => {
+    try {
+        const { teacherId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+            return next(new AppError("Invalid teacher ID.", 400));
+        }
+
+        const teacher = await User.findOne({
+            _id: teacherId,
+            role: "TEACHER"
+        });
+
+        if (!teacher) {
+            return next(new AppError("Teacher not found.", 404));
+        }
+
+        const {
+            fullName,
+            email,
+            employeeId,
+            department,
+            isActive
+        } = req.body;
+
+        // Update and validate full name
+        if (fullName !== undefined) {
+            if (typeof fullName !== "string" || !fullName.trim()) {
+                return next(new AppError("Full name is required.", 400));
+            }
+
+            teacher.fullName = fullName.trim();
+        }
+
+        // Update and validate email
+        if (email !== undefined) {
+            if (typeof email !== "string" || !email.trim()) {
+                return next(new AppError("Email is required.", 400));
+            }
+
+            const normalizedEmail = email.trim().toLowerCase();
+
+            const emailExists = await User.findOne({
+                email: normalizedEmail,
+                _id: { $ne: teacherId }
+            });
+
+            if (emailExists) {
+                return next(new AppError("Email already exists.", 400));
+            }
+
+            teacher.email = normalizedEmail;
+        }
+
+        // Update and validate employee ID
+        if (employeeId !== undefined) {
+            if (
+                typeof employeeId !== "string" ||
+                !employeeId.trim()
+            ) {
+                return next(new AppError("Employee ID is required.", 400));
+            }
+
+            const normalizedEmployeeId = employeeId.trim().toUpperCase();
+
+            const employeeExists = await User.findOne({
+                employeeId: normalizedEmployeeId,
+                _id: { $ne: teacherId }
+            });
+
+            if (employeeExists) {
+                return next(
+                    new AppError("Employee ID already exists.", 400)
+                );
+            }
+
+            teacher.employeeId = normalizedEmployeeId;
+        }
+
+        // Update and validate department
+        if (department !== undefined) {
+            if (!mongoose.Types.ObjectId.isValid(department)) {
+                return next(new AppError("Invalid department ID.", 400));
+            }
+
+            const departmentExists = await Department.findById(department);
+
+            if (!departmentExists) {
+                return next(new AppError("Department does not exist.", 404));
+            }
+
+            if (!departmentExists.isActive) {
+                return next(
+                    new AppError("Department is currently inactive.", 400)
+                );
+            }
+
+            teacher.department = department;
+        }
+
+        // Allow admin to reactivate/deactivate a teacher
+        if (isActive !== undefined) {
+            if (typeof isActive !== "boolean") {
+                return next(new AppError("isActive must be a boolean.", 400));
+            }
+
+            teacher.isActive = isActive;
+        }
+
+        await teacher.save();
+
+        const updatedTeacher = await User.findOne({
+            _id: teacher._id,
+            role: "TEACHER"
+        })
+            .select("-password -forgotPasswordToken -forgotPasswordExpiry")
+            .populate("department", "name code");
+
+        return res.status(200).json({
+            success: true,
+            message: "Teacher updated successfully.",
+            teacher: updatedTeacher
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            return next(
+                new AppError("Email or employee ID already exists.", 400)
+            );
+        }
+
+        if (error.name === "ValidationError") {
+            return next(new AppError(error.message, 400));
+        }
+
+        return next(new AppError(error.message, 500));
+    }
+};
+
+
+// DEACTIVATE TEACHER (SOFT DELETE)
+const deleteTeacher = async (req, res, next) => {
+    try {
+        const { teacherId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+            return next(new AppError("Invalid teacher ID.", 400));
+        }
+
+        const teacher = await User.findOne({
+            _id: teacherId,
+            role: "TEACHER"
+        });
+
+        if (!teacher) {
+            return next(new AppError("Teacher not found.", 404));
+        }
+
+        teacher.isActive = false;
+        await teacher.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Teacher account deactivated successfully."
+        });
+    } catch (error) {
+        return next(new AppError(error.message, 500));
+    }
+};
 
 export {
     createStudent,
@@ -695,5 +885,8 @@ export {
     getAllStudents,
     getStudentById,
     updateStudent,
-    deleteStudent
+    deleteStudent,
+    getAllTeachers,
+    updateTeacher,
+    deleteTeacher
 }

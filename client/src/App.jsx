@@ -12,6 +12,7 @@ import Profile from "./Pages/Profile.jsx";
 import Allotment from "./Pages/Allotment.jsx";
 import Students from "./Pages/Students.jsx";
 import Departments from "./Pages/Departments.jsx";
+import Teachers from "./Pages/Teachers.jsx";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
       <Route path="/allotment" element={<Allotment />} />
       <Route path="/students" element={<Students/>}/>
       <Route path="/departments" element={<Departments />} />
+      <Route path="/teachers" element={<Teachers />} />
 
       </Routes>
     </>

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword, changePassword, getAllStudents,getStudentById, updateStudent, deleteStudent } from "../controllers/user.controller.js";
+import { getProfile, login, logout, createStudent, createTeacher, forgotPassword, resetPassword, changePassword, getAllStudents,getStudentById, updateStudent, deleteStudent, getAllTeachers, updateTeacher, deleteTeacher } from "../controllers/user.controller.js";
 import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 
@@ -49,6 +49,28 @@ router.delete(
     isLoggedIn,
     authorizeRoles("ADMIN"),
     deleteStudent
+);
+
+// TEACHER MANAGEMENT — ADMIN ONLY
+router.get(
+    "/teachers",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    getAllTeachers
+);
+
+router.put(
+    "/teachers/:teacherId",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    updateTeacher
+);
+
+router.delete(
+    "/teachers/:teacherId",
+    isLoggedIn,
+    authorizeRoles("ADMIN"),
+    deleteTeacher
 );
 
 export default router;
