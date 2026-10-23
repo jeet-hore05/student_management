@@ -13,6 +13,9 @@ import Allotment from "./Pages/Allotment.jsx";
 import Students from "./Pages/Students.jsx";
 import Departments from "./Pages/Departments.jsx";
 import Teachers from "./Pages/Teachers.jsx";
+import Attendance from "./Pages/Attendance.jsx";
+import Subjects from "./Pages/Subjects.jsx";
+import Routines from "./Pages/Routines.jsx";
 
 function App() {
 
@@ -35,6 +38,9 @@ function App() {
       <Route path="/students" element={<Students/>}/>
       <Route path="/departments" element={<Departments />} />
       <Route path="/teachers" element={<Teachers />} />
+      <Route path="/attendance" element={<Attendance />} />
+      <Route path="/subjects" element={<Subjects />} />
+      <Route path="/routines" element={<Routines />} />
 
       </Routes>
     </>

@@ -26,14 +26,14 @@ router.get("/me", isLoggedIn, getProfile);
 router.get(
     "/students",
     isLoggedIn,
-    authorizeRoles("ADMIN"),
+    authorizeRoles("ADMIN", "TEACHER"),
     getAllStudents
 );
 
 router.get(
     "/students/:studentId",
     isLoggedIn,
-    authorizeRoles("ADMIN"),
+    authorizeRoles("ADMIN", "TEACHER"),
     getStudentById
 );
 

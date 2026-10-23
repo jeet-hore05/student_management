@@ -9,7 +9,7 @@ const subjectSchema = new Schema(
             minLength: [2, "Subject name must be at least 2 charcters"],
             maxLength: [50, "Subject name sholud be less than 50 characters"]
         },
-        subjcetCode: {
+        subjectCode: {
             type: String,
             required: [true, "Subject code is required"],
             unique: true,
