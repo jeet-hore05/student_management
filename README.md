@@ -930,3 +930,47 @@ The general data flow is:
 `React Component → Axios Instance → Backend Route → Controller → MongoDB → Response`
 
 These modules extend the frontend with department management, student management, and department allotment functionality.
+
+
+
+**Step 16 : Teacher Management, Subject, Routine and Attendance Modules**
+
+After implementing the Allotment, Student, and Department modules, we developed the **Teacher Management, Subject, Routine, and Attendance modules** in the frontend.
+
+**1. Implement Teacher Management Module**
+
+Created the Teacher Management interface to manage teacher-related information.
+
+The module communicates with the backend using the configured Axios instance to retrieve and manage teacher records according to the implemented functionality.
+
+**2. Implement Subject Module**
+
+Created the Subject Module to manage subject-related information.
+
+The module communicates with the backend APIs to retrieve and manage subjects associated with the relevant academic departments.
+
+**3. Implement Routine Module**
+
+Created the Routine Module to display and manage class schedules.
+
+The module communicates with the backend to retrieve routine information, including the relevant subjects, teachers, departments, and class timings supported by the application.
+
+**4. Implement Attendance Module**
+
+Created the Attendance Module to manage student attendance records.
+
+The module communicates with the backend to perform the supported attendance operations and retrieve attendance information for viewing and management.
+
+**5. Integrate Backend APIs**
+
+Integrated the modules with the existing backend APIs using the reusable Axios instance.
+
+This allows the frontend to exchange data with the backend and display information retrieved from MongoDB.
+
+**6. Module Flow**
+
+The general data flow is:
+
+`React Component → Axios Instance → Backend Route → Controller → MongoDB → Response`
+
+These modules extend the frontend with teacher management, subject management, routine management, and attendance functionality.
