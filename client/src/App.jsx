@@ -16,6 +16,7 @@ import Teachers from "./Pages/Teachers.jsx";
 import Attendance from "./Pages/Attendance.jsx";
 import Subjects from "./Pages/Subjects.jsx";
 import Routines from "./Pages/Routines.jsx";
+import View from "./Pages/View.jsx";
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
       <Route path="/attendance" element={<Attendance />} />
       <Route path="/subjects" element={<Subjects />} />
       <Route path="/routines" element={<Routines />} />
+      <Route path="/view" element={<View />} />
 
       </Routes>
     </>
