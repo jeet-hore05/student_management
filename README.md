@@ -974,3 +974,36 @@ The general data flow is:
 `React Component → Axios Instance → Backend Route → Controller → MongoDB → Response`
 
 These modules extend the frontend with teacher management, subject management, routine management, and attendance functionality.
+
+**Step 17 : View Module**
+
+After implementing the Teacher Management, Subject, Routine, and Attendance modules, we developed the **View Module** in the frontend.
+
+**1. Implement View Module**
+
+Created the View interface to display information retrieved from different modules of the Student Management System.
+
+The module brings together the relevant academic information so that users can view the data available to them.
+
+**2. Integrate Backend APIs**
+
+Connected the View Module to the backend using the reusable Axios instance.
+
+The frontend sends requests to the corresponding backend endpoints and receives the required information for display.
+
+**3. Display Academic Information**
+
+The View Module is used to display information from the following modules, according to the implemented functionality:
+
+- Student and teacher information
+- Subject information
+- Class routine information
+- Attendance records
+
+**4. View Module Flow**
+
+The data flow works as follows:
+
+`View Component → Axios Instance → Backend Route → Controller → Database Models → Response → Display Data`
+
+The View Module completes the main frontend structure by providing an interface for viewing information managed by the different modules of the Student Management System.
