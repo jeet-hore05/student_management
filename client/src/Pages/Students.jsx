@@ -63,6 +63,9 @@ const Students = () => {
     const [editingStudent, setEditingStudent] = useState(null);
     const [form, setForm] = useState(initialForm);
 
+    const [avatar, setAvatar] = useState(null);     // For upload img
+    const [preview, setPreview] = useState("");
+
     const fetchStudents = useCallback(async () => {
         setLoading(true);
 
@@ -143,9 +146,18 @@ const Students = () => {
 
     const inactiveCount = students.length - activeCount;
 
+    // const openCreateForm = () => {
+    //     setEditingStudent(null);
+    //     setForm(initialForm);
+    //     setIsFormOpen(true);
+    // };
+
+
     const openCreateForm = () => {
         setEditingStudent(null);
         setForm(initialForm);
+        setAvatar(null);
+        setPreview("");
         setIsFormOpen(true);
     };
 
@@ -171,6 +183,8 @@ const Students = () => {
         setIsFormOpen(false);
         setEditingStudent(null);
         setForm(initialForm);
+        setAvatar(null);
+        setPreview("");
     };
 
     const handleChange = (event) => {
@@ -180,6 +194,27 @@ const Students = () => {
             ...previous,
             [name]: value,
         }));
+    };
+
+    const handleAvatarChange = (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            toast.error("Please select an image file.");
+            event.target.value = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image size must be less than 5 MB.");
+            event.target.value = "";
+            return;
+        }
+
+        setAvatar(file);
+        setPreview(URL.createObjectURL(file));
     };
 
     const handleSubmit = async (event) => {
@@ -224,6 +259,10 @@ const Students = () => {
                 payload.append("department", form.department);
                 payload.append("semester", form.semester);
                 payload.append("section", form.section.trim().toUpperCase());
+
+                if (avatar) {
+                    payload.append("avatar", avatar);
+                }
 
                 await axiosInstance.post(
                     "/user/createStudent",
@@ -570,11 +609,10 @@ const Students = () => {
 
                                                         <td className="px-6 py-4">
                                                             <span
-                                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                                    active
+                                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${active
                                                                         ? "bg-green-500/10 text-green-400"
                                                                         : "bg-red-500/10 text-red-400"
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 {active
                                                                     ? "Active"
@@ -608,11 +646,10 @@ const Students = () => {
                                                                     onClick={() =>
                                                                         handleToggleStatus(student)
                                                                     }
-                                                                    className={`rounded-lg border border-gray-600 p-2 transition-colors ${
-                                                                        active
+                                                                    className={`rounded-lg border border-gray-600 p-2 transition-colors ${active
                                                                             ? "text-red-400 hover:border-red-400 hover:bg-red-500/10"
                                                                             : "text-green-400 hover:border-green-400 hover:bg-green-500/10"
-                                                                    }`}
+                                                                        }`}
                                                                 >
                                                                     {active ? (
                                                                         <FiUserX size={16} />
@@ -654,11 +691,10 @@ const Students = () => {
                                                     </div>
 
                                                     <span
-                                                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                            active
+                                                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${active
                                                                 ? "bg-green-500/10 text-green-400"
                                                                 : "bg-red-500/10 text-red-400"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {active
                                                             ? "Active"
@@ -706,11 +742,10 @@ const Students = () => {
                                                         onClick={() =>
                                                             handleToggleStatus(student)
                                                         }
-                                                        className={`${buttonClass} flex-1 border border-gray-600 ${
-                                                            active
+                                                        className={`${buttonClass} flex-1 border border-gray-600 ${active
                                                                 ? "text-red-400 hover:border-red-400"
                                                                 : "text-green-400 hover:border-green-400"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {active ? (
                                                             <FiUserX />
@@ -776,6 +811,55 @@ const Students = () => {
 
                         <form onSubmit={handleSubmit} className="p-5 sm:p-6">
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                                {!editingStudent && (
+                                    <div className="sm:col-span-2">
+                                        <label className={labelClass}>
+                                            Student Profile Picture (Optional)
+                                        </label>
+
+                                        <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-700 bg-gray-900/50 p-5 sm:flex-row">
+                                            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-yellow-500 bg-gray-800">
+                                                {preview ? (
+                                                    <img
+                                                        src={preview}
+                                                        alt="Student profile preview"
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-full w-full items-center justify-center text-gray-500">
+                                                        <FiUsers size={32} />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="w-full flex-1">
+                                                <input
+                                                    type="file"
+                                                    accept="image/png,image/jpeg,image/webp"
+                                                    onChange={handleAvatarChange}
+                                                    className={`${inputClass} file:mr-3 file:rounded-md file:border-0 file:bg-yellow-500 file:px-3 file:py-2 file:font-semibold file:text-gray-950`}
+                                                />
+
+                                                <p className="mt-2 text-xs text-gray-500">
+                                                    JPG, PNG, or WebP. Maximum 5 MB.
+                                                </p>
+
+                                                {preview && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setAvatar(null);
+                                                            setPreview("");
+                                                        }}
+                                                        className="mt-2 text-sm text-red-400 hover:text-red-300"
+                                                    >
+                                                        Remove selected image
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div>
                                     <label className={labelClass}>
                                         Full Name *

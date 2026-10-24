@@ -58,8 +58,8 @@ function Profile() {
     } catch (error) {
       setFetchError(
         error.response?.data?.message ||
-          error.message ||
-          "Unable to load your profile."
+        error.message ||
+        "Unable to load your profile."
       );
     } finally {
       setIsFetching(false);
@@ -119,7 +119,7 @@ function Profile() {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Password change failed. Please try again."
+        "Password change failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -201,6 +201,14 @@ function Profile() {
     displayUser?.username ||
     "User";
 
+
+  const avatarUrl =
+    typeof displayUser?.avatar === "string"
+      ? displayUser.avatar
+      : displayUser?.avatar?.secure_url ||
+      displayUser?.avatar?.url ||
+      "";
+
   const email = displayUser?.email || "Email not available";
   const userRole = displayUser?.role || role || "USER";
 
@@ -256,9 +264,22 @@ function Profile() {
                 {/* Profile Details */}
                 <div className="h-fit rounded-2xl border border-gray-700 bg-gray-800 p-6 sm:p-8 lg:col-span-2">
                   <div className="flex flex-col items-center text-center">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-yellow-500 bg-gray-900 text-5xl text-yellow-500">
-                      <FaUserCircle />
+
+                    <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-yellow-500 bg-gray-900 text-5xl text-yellow-500">
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={`${fullName}'s profile`}
+                          className="h-full w-full object-cover"
+                          onError={(event) => {
+                            event.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <FaUserCircle />
+                      )}
                     </div>
+
 
                     <h2 className="mt-5 wrap-break-word text-xl font-bold sm:text-2xl">
                       {fullName}
