@@ -42,9 +42,6 @@ const userSchema = new Schema({
         required: [true, "User role is required"]
     },
 
-    // We store Department's MongoDB _id here instead
-    // of storing "CSE" directly.
-
     department: {
         type: Schema.Types.ObjectId,
         ref: "Department"
@@ -83,8 +80,7 @@ const userSchema = new Schema({
         trim: true,
         uppercase: true
     },
-    // Admin can deactivate a student's/teacher's account
-    // without deleting the database record.
+   
     isActive: {
         type: Boolean,
         default: true

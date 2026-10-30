@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import sendEmail from "../utils/sendEmail.js";
 
 import Department from "../models/department.model.js";
+import TeacherDepartment from "../models/teacherDepartment.model.js";
 
 
 const cookieOptions = {
@@ -167,11 +168,10 @@ const createTeacher = async (req, res, next) => {
             email,
             password,
             employeeId,
-            department
         } = req.body;
 
 
-        if (!fullName || !email || !password || !employeeId || !department) {
+        if (!fullName || !email || !password || !employeeId ) {
             return next(
                 new AppError("All fields are required", 400)
             );
@@ -200,19 +200,19 @@ const createTeacher = async (req, res, next) => {
             );
         }
 
-        const departmentExists = await Department.findById(
-            department
-        );
+        // const departmentExists = await Department.findById(
+        //     department
+        // );
 
-        if (!departmentExists) {
+        // if (!departmentExists) {
 
-            return next(
-                new AppError(
-                    "Department does not exist.",
-                    404
-                )
-            );
-        }
+        //     return next(
+        //         new AppError(
+        //             "Department does not exist.",
+        //             404
+        //         )
+        //     );
+        // }
 
 
         // Create teacher
@@ -226,7 +226,6 @@ const createTeacher = async (req, res, next) => {
             role: "TEACHER",
 
             employeeId,
-            department,
 
             avatar: {
                 public_id: email,
@@ -684,19 +683,57 @@ const deleteStudent = async (req, res, next) => {
 };
 
 // GET ALL TEACHERS
+// const getAllTeachers = async (req, res, next) => {
+//     try {
+//         const teachers = await User.find({ role: "TEACHER" })
+//             .select("-password -forgotPasswordToken -forgotPasswordExpiry")
+//             // .populate("department", "name code")
+//             .sort({ createdAt: -1 });
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Teachers fetched successfully.",
+//             count: teachers.length,
+//             teachers
+//         });
+//     } catch (error) {
+//         return next(new AppError(error.message, 500));
+//     }
+// };
+
 const getAllTeachers = async (req, res, next) => {
     try {
+        // Fetch all teachers
         const teachers = await User.find({ role: "TEACHER" })
             .select("-password -forgotPasswordToken -forgotPasswordExpiry")
-            .populate("department", "name code")
             .sort({ createdAt: -1 });
+
+        // Fetch their department assignments
+        const allotments = await TeacherDepartment.find()
+            .populate("department", "name code");
+
+        // Attach departments to each teacher
+        const teachersWithDepartments = teachers.map((teacher) => {
+            const teacherDepartments = allotments
+                .filter(
+                    (allotment) =>
+                        allotment.teacher.toString() === teacher._id.toString()
+                )
+                .map((allotment) => allotment.department)
+                .filter(Boolean);
+
+            return {
+                ...teacher.toObject(),
+                departments: teacherDepartments
+            };
+        });
 
         return res.status(200).json({
             success: true,
-            message: "Teachers fetched successfully.",
-            count: teachers.length,
-            teachers
+            count: teachersWithDepartments.length,
+            teachers: teachersWithDepartments
         });
+
     } catch (error) {
         return next(new AppError(error.message, 500));
     }
@@ -725,7 +762,6 @@ const updateTeacher = async (req, res, next) => {
             fullName,
             email,
             employeeId,
-            department,
             isActive
         } = req.body;
 
@@ -784,25 +820,25 @@ const updateTeacher = async (req, res, next) => {
         }
 
         // Update and validate department
-        if (department !== undefined) {
-            if (!mongoose.Types.ObjectId.isValid(department)) {
-                return next(new AppError("Invalid department ID.", 400));
-            }
+        // if (department !== undefined) {
+        //     if (!mongoose.Types.ObjectId.isValid(department)) {
+        //         return next(new AppError("Invalid department ID.", 400));
+        //     }
 
-            const departmentExists = await Department.findById(department);
+        //     const departmentExists = await Department.findById(department);
 
-            if (!departmentExists) {
-                return next(new AppError("Department does not exist.", 404));
-            }
+        //     if (!departmentExists) {
+        //         return next(new AppError("Department does not exist.", 404));
+        //     }
 
-            if (!departmentExists.isActive) {
-                return next(
-                    new AppError("Department is currently inactive.", 400)
-                );
-            }
+        //     if (!departmentExists.isActive) {
+        //         return next(
+        //             new AppError("Department is currently inactive.", 400)
+        //         );
+        //     }
 
-            teacher.department = department;
-        }
+        //     teacher.department = department;
+        // }
 
         // Allow admin to reactivate/deactivate a teacher
         if (isActive !== undefined) {
@@ -820,7 +856,7 @@ const updateTeacher = async (req, res, next) => {
             role: "TEACHER"
         })
             .select("-password -forgotPasswordToken -forgotPasswordExpiry")
-            .populate("department", "name code");
+            // .populate("department", "name code");
 
         return res.status(200).json({
             success: true,

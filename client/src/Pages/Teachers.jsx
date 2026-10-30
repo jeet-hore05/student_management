@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     FiAlertCircle,
@@ -23,12 +22,10 @@ const initialForm = {
     email: "",
     password: "",
     employeeId: "",
-    department: "",
 };
 
 function Teachers() {
     const [teachers, setTeachers] = useState([]);
-    const [departments, setDepartments] = useState([]);
     const [form, setForm] = useState(initialForm);
     const [search, setSearch] = useState("");
     const [showForm, setShowForm] = useState(false);
@@ -38,6 +35,7 @@ function Teachers() {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
+    // Fetch all teachers
     const fetchTeachers = useCallback(async (showLoader = true) => {
         try {
             setError("");
@@ -63,39 +61,37 @@ function Teachers() {
         }
     }, []);
 
-    const fetchDepartments = useCallback(async () => {
-        try {
-            const response = await axiosInstance.get("/allotment/departments");
-            setDepartments(response.data.departments || []);
-        } catch (err) {
-            toast.error(
-                err.response?.data?.message || "Failed to load departments."
-            );
-        }
-    }, []);
-
     useEffect(() => {
         fetchTeachers();
-        fetchDepartments();
-    }, [fetchTeachers, fetchDepartments]);
+    }, [fetchTeachers]);
 
+    // Get department names for a teacher
+    const getDepartmentNames = (teacher) => {
+        return (teacher.departments || [])
+            .map((department) => department?.name)
+            .filter(Boolean)
+            .join(", ");
+    };
+
+    // Search teachers
     const filteredTeachers = useMemo(() => {
         const query = search.trim().toLowerCase();
 
         if (!query) return teachers;
 
         return teachers.filter((teacher) => {
-            const department =
-                typeof teacher.department === "object"
-                    ? teacher.department?.name || ""
-                    : "";
+            const department = (teacher.departments || [])
+                .map((department) => department?.name || "")
+                .join(", ");
 
             return [
                 teacher.fullName,
                 teacher.email,
                 teacher.employeeId,
                 department,
-            ].some((value) => String(value || "").toLowerCase().includes(query));
+            ].some((value) =>
+                String(value || "").toLowerCase().includes(query)
+            );
         });
     }, [teachers, search]);
 
@@ -105,12 +101,14 @@ function Teachers() {
 
     const inactiveCount = teachers.length - activeCount;
 
+    // Open create form
     const openCreateForm = () => {
         setEditingTeacher(null);
         setForm(initialForm);
         setShowForm(true);
     };
 
+    // Open edit form
     const openEditForm = (teacher) => {
         setEditingTeacher(teacher);
 
@@ -119,15 +117,12 @@ function Teachers() {
             email: teacher.email || "",
             password: "",
             employeeId: teacher.employeeId || "",
-            department:
-                typeof teacher.department === "object"
-                    ? teacher.department?._id || ""
-                    : teacher.department || "",
         });
 
         setShowForm(true);
     };
 
+    // Close form
     const closeForm = () => {
         if (submitting) return;
 
@@ -136,6 +131,7 @@ function Teachers() {
         setForm(initialForm);
     };
 
+    // Handle input changes
     const handleChange = (event) => {
         const { name, value } = event.target;
 
@@ -145,6 +141,7 @@ function Teachers() {
         }));
     };
 
+    // Create or update teacher
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -152,14 +149,12 @@ function Teachers() {
             fullName: form.fullName.trim(),
             email: form.email.trim().toLowerCase(),
             employeeId: form.employeeId.trim().toUpperCase(),
-            department: form.department,
         };
 
         if (
             !payload.fullName ||
             !payload.email ||
-            !payload.employeeId ||
-            !payload.department
+            !payload.employeeId
         ) {
             toast.error("Please fill in all required fields.");
             return;
@@ -181,7 +176,6 @@ function Teachers() {
                 const response = await axiosInstance.put(
                     `/user/teachers/${editingTeacher._id}`,
                     payload
-
                 );
 
                 toast.success(
@@ -198,7 +192,10 @@ function Teachers() {
                 );
             }
 
-            closeForm();
+            setShowForm(false);
+            setEditingTeacher(null);
+            setForm(initialForm);
+
             await fetchTeachers(false);
         } catch (err) {
             toast.error(
@@ -209,6 +206,7 @@ function Teachers() {
         }
     };
 
+    // Activate or deactivate teacher
     const toggleTeacherStatus = async (teacher) => {
         const isActive = teacher.isActive !== false;
 
@@ -220,13 +218,16 @@ function Teachers() {
 
         try {
             if (isActive) {
-                const response = await axiosInstance.delete(
-    `/user/teachers/${teacher._id}`
-);
+                await axiosInstance.delete(
+                    `/user/teachers/${teacher._id}`
+                );
             } else {
-                await axiosInstance.put(`/user/teachers/${teacher._id}`, {
-                    isActive: true,
-                });
+                await axiosInstance.put(
+                    `/user/teachers/${teacher._id}`,
+                    {
+                        isActive: true,
+                    }
+                );
             }
 
             toast.success(
@@ -236,7 +237,8 @@ function Teachers() {
             await fetchTeachers(false);
         } catch (err) {
             toast.error(
-                err.response?.data?.message || "Failed to update teacher status."
+                err.response?.data?.message ||
+                    "Failed to update teacher status."
             );
         }
     };
@@ -245,6 +247,7 @@ function Teachers() {
         <HomeLayout>
             <main className="min-h-screen bg-gray-900 px-4 py-6 text-gray-100 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-7xl space-y-6">
+
                     {/* Header */}
                     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -278,34 +281,54 @@ function Teachers() {
                     <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
                             <div className="flex items-center justify-between">
-                                <p className="text-sm text-gray-400">Total Teachers</p>
+                                <p className="text-sm text-gray-400">
+                                    Total Teachers
+                                </p>
                                 <FiUsers className="text-yellow-500" size={22} />
                             </div>
-                            <p className="mt-3 text-3xl font-bold">{teachers.length}</p>
+
+                            <p className="mt-3 text-3xl font-bold">
+                                {teachers.length}
+                            </p>
                         </div>
 
                         <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
                             <div className="flex items-center justify-between">
-                                <p className="text-sm text-gray-400">Active Teachers</p>
+                                <p className="text-sm text-gray-400">
+                                    Active Teachers
+                                </p>
                                 <FiCheckCircle className="text-green-400" size={22} />
                             </div>
-                            <p className="mt-3 text-3xl font-bold">{activeCount}</p>
+
+                            <p className="mt-3 text-3xl font-bold">
+                                {activeCount}
+                            </p>
                         </div>
 
                         <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
                             <div className="flex items-center justify-between">
-                                <p className="text-sm text-gray-400">Inactive Teachers</p>
+                                <p className="text-sm text-gray-400">
+                                    Inactive Teachers
+                                </p>
                                 <FiAlertCircle className="text-red-400" size={22} />
                             </div>
-                            <p className="mt-3 text-3xl font-bold">{inactiveCount}</p>
+
+                            <p className="mt-3 text-3xl font-bold">
+                                {inactiveCount}
+                            </p>
                         </div>
                     </section>
 
-                    {/* Teacher directory */}
+                    {/* Teacher Directory */}
                     <section className="overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
+
+                        {/* Search and Refresh */}
                         <div className="flex flex-col gap-4 border-b border-gray-700 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
                             <div>
-                                <h2 className="text-lg font-semibold">All Teachers</h2>
+                                <h2 className="text-lg font-semibold">
+                                    All Teachers
+                                </h2>
+
                                 <p className="mt-1 text-sm text-gray-400">
                                     {filteredTeachers.length} teacher
                                     {filteredTeachers.length !== 1 ? "s" : ""} found
@@ -314,11 +337,17 @@ function Teachers() {
 
                             <div className="flex flex-col gap-3 sm:flex-row">
                                 <label className="flex items-center gap-2 rounded-lg border border-gray-600 bg-gray-900 px-3 py-2 focus-within:border-yellow-500">
-                                    <FiSearch className="shrink-0 text-gray-400" size={18} />
+                                    <FiSearch
+                                        className="shrink-0 text-gray-400"
+                                        size={18}
+                                    />
+
                                     <input
                                         type="search"
                                         value={search}
-                                        onChange={(event) => setSearch(event.target.value)}
+                                        onChange={(event) =>
+                                            setSearch(event.target.value)
+                                        }
                                         placeholder="Search teachers..."
                                         className="w-full bg-transparent text-sm outline-none placeholder:text-gray-500 sm:w-56"
                                     />
@@ -339,15 +368,26 @@ function Teachers() {
                             </div>
                         </div>
 
+                        {/* Loading */}
                         {loading ? (
                             <div className="flex min-h-64 items-center justify-center">
                                 <span className="loading loading-spinner loading-lg text-yellow-500" />
                             </div>
                         ) : error ? (
                             <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-                                <FiAlertCircle size={38} className="text-red-400" />
-                                <p className="mt-4 font-semibold">Unable to load teachers</p>
-                                <p className="mt-2 text-sm text-gray-400">{error}</p>
+                                <FiAlertCircle
+                                    size={38}
+                                    className="text-red-400"
+                                />
+
+                                <p className="mt-4 font-semibold">
+                                    Unable to load teachers
+                                </p>
+
+                                <p className="mt-2 text-sm text-gray-400">
+                                    {error}
+                                </p>
+
                                 <button
                                     type="button"
                                     onClick={() => fetchTeachers()}
@@ -359,9 +399,13 @@ function Teachers() {
                         ) : filteredTeachers.length === 0 ? (
                             <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
                                 <FiUser size={42} className="text-gray-500" />
+
                                 <h3 className="mt-4 text-lg font-semibold">
-                                    {search ? "No matching teachers" : "No teachers yet"}
+                                    {search
+                                        ? "No matching teachers"
+                                        : "No teachers yet"}
                                 </h3>
+
                                 <p className="mt-2 text-sm text-gray-400">
                                     {search
                                         ? "Try searching with another keyword."
@@ -370,7 +414,7 @@ function Teachers() {
                             </div>
                         ) : (
                             <>
-                                {/* Desktop table */}
+                                {/* Desktop Table */}
                                 <div className="hidden overflow-x-auto md:block">
                                     <table className="table">
                                         <thead>
@@ -385,11 +429,11 @@ function Teachers() {
 
                                         <tbody>
                                             {filteredTeachers.map((teacher) => {
-                                                const isActive = teacher.isActive !== false;
+                                                const isActive =
+                                                    teacher.isActive !== false;
+
                                                 const department =
-                                                    typeof teacher.department === "object"
-                                                        ? teacher.department?.name
-                                                        : "";
+                                                    getDepartmentNames(teacher);
 
                                                 return (
                                                     <tr
@@ -401,10 +445,12 @@ function Teachers() {
                                                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
                                                                     <FiUser size={20} />
                                                                 </div>
+
                                                                 <div>
                                                                     <p className="font-semibold text-gray-100">
                                                                         {teacher.fullName}
                                                                     </p>
+
                                                                     <p className="text-sm text-gray-400">
                                                                         {teacher.email}
                                                                     </p>
@@ -422,12 +468,15 @@ function Teachers() {
 
                                                         <td>
                                                             <span
-                                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${isActive
+                                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                                                    isActive
                                                                         ? "bg-green-500/10 text-green-400"
                                                                         : "bg-red-500/10 text-red-400"
-                                                                    }`}
+                                                                }`}
                                                             >
-                                                                {isActive ? "Active" : "Inactive"}
+                                                                {isActive
+                                                                    ? "Active"
+                                                                    : "Inactive"}
                                                             </span>
                                                         </td>
 
@@ -435,7 +484,9 @@ function Teachers() {
                                                             <div className="flex items-center gap-2">
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => openEditForm(teacher)}
+                                                                    onClick={() =>
+                                                                        openEditForm(teacher)
+                                                                    }
                                                                     title="Edit teacher"
                                                                     aria-label={`Edit ${teacher.fullName}`}
                                                                     className="rounded-lg p-2 text-yellow-400 transition hover:bg-yellow-500/10"
@@ -445,13 +496,24 @@ function Teachers() {
 
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => toggleTeacherStatus(teacher)}
-                                                                    title={isActive ? "Deactivate" : "Activate"}
-                                                                    aria-label={`${isActive ? "Deactivate" : "Activate"} ${teacher.fullName}`}
-                                                                    className={`rounded-lg p-2 transition hover:bg-gray-700 ${isActive
+                                                                    onClick={() =>
+                                                                        toggleTeacherStatus(teacher)
+                                                                    }
+                                                                    title={
+                                                                        isActive
+                                                                            ? "Deactivate"
+                                                                            : "Activate"
+                                                                    }
+                                                                    aria-label={`${
+                                                                        isActive
+                                                                            ? "Deactivate"
+                                                                            : "Activate"
+                                                                    } ${teacher.fullName}`}
+                                                                    className={`rounded-lg p-2 transition hover:bg-gray-700 ${
+                                                                        isActive
                                                                             ? "text-red-400"
                                                                             : "text-green-400"
-                                                                        }`}
+                                                                    }`}
                                                                 >
                                                                     {isActive ? (
                                                                         <FiToggleRight size={20} />
@@ -468,14 +530,14 @@ function Teachers() {
                                     </table>
                                 </div>
 
-                                {/* Mobile and tablet cards */}
+                                {/* Mobile and Tablet Cards */}
                                 <div className="grid grid-cols-1 gap-4 p-4 md:hidden sm:grid-cols-2">
                                     {filteredTeachers.map((teacher) => {
-                                        const isActive = teacher.isActive !== false;
+                                        const isActive =
+                                            teacher.isActive !== false;
+
                                         const department =
-                                            typeof teacher.department === "object"
-                                                ? teacher.department?.name
-                                                : "";
+                                            getDepartmentNames(teacher);
 
                                         return (
                                             <article
@@ -486,10 +548,12 @@ function Teachers() {
                                                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
                                                         <FiUser size={21} />
                                                     </div>
+
                                                     <div className="min-w-0 flex-1">
                                                         <h3 className="wrap-break-word font-semibold">
                                                             {teacher.fullName}
                                                         </h3>
+
                                                         <p className="mt-1 break-all text-sm text-gray-400">
                                                             {teacher.email}
                                                         </p>
@@ -498,28 +562,40 @@ function Teachers() {
 
                                                 <div className="mt-4 space-y-3 border-t border-gray-700 pt-3 text-sm">
                                                     <div className="flex items-start justify-between gap-3">
-                                                        <span className="text-gray-400">Employee ID</span>
+                                                        <span className="text-gray-400">
+                                                            Employee ID
+                                                        </span>
+
                                                         <span className="break-all font-mono text-yellow-400">
                                                             {teacher.employeeId || "—"}
                                                         </span>
                                                     </div>
 
                                                     <div className="flex items-start justify-between gap-3">
-                                                        <span className="text-gray-400">Department</span>
+                                                        <span className="text-gray-400">
+                                                            Department
+                                                        </span>
+
                                                         <span className="text-right text-gray-200">
                                                             {department || "Not assigned"}
                                                         </span>
                                                     </div>
 
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <span className="text-gray-400">Status</span>
+                                                        <span className="text-gray-400">
+                                                            Status
+                                                        </span>
+
                                                         <span
-                                                            className={`rounded-full px-2 py-1 text-xs font-semibold ${isActive
+                                                            className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                                                                isActive
                                                                     ? "bg-green-500/10 text-green-400"
                                                                     : "bg-red-500/10 text-red-400"
-                                                                }`}
+                                                            }`}
                                                         >
-                                                            {isActive ? "Active" : "Inactive"}
+                                                            {isActive
+                                                                ? "Active"
+                                                                : "Inactive"}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -527,7 +603,9 @@ function Teachers() {
                                                 <div className="mt-4 flex gap-3 border-t border-gray-700 pt-3">
                                                     <button
                                                         type="button"
-                                                        onClick={() => openEditForm(teacher)}
+                                                        onClick={() =>
+                                                            openEditForm(teacher)
+                                                        }
                                                         className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-600 px-3 py-2 text-sm font-medium transition hover:border-yellow-500 hover:text-yellow-400"
                                                     >
                                                         <FiEdit2 size={16} />
@@ -536,16 +614,24 @@ function Teachers() {
 
                                                     <button
                                                         type="button"
-                                                        onClick={() => toggleTeacherStatus(teacher)}
-                                                        className={`inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-600 px-3 py-2 text-sm font-medium transition hover:bg-gray-700 ${isActive ? "text-red-400" : "text-green-400"
-                                                            }`}
+                                                        onClick={() =>
+                                                            toggleTeacherStatus(teacher)
+                                                        }
+                                                        className={`inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-600 px-3 py-2 text-sm font-medium transition hover:bg-gray-700 ${
+                                                            isActive
+                                                                ? "text-red-400"
+                                                                : "text-green-400"
+                                                        }`}
                                                     >
                                                         {isActive ? (
                                                             <FiToggleRight size={18} />
                                                         ) : (
                                                             <FiToggleLeft size={18} />
                                                         )}
-                                                        {isActive ? "Deactivate" : "Activate"}
+
+                                                        {isActive
+                                                            ? "Deactivate"
+                                                            : "Activate"}
                                                     </button>
                                                 </div>
                                             </article>
@@ -557,7 +643,7 @@ function Teachers() {
                     </section>
                 </div>
 
-                {/* Create / edit modal */}
+                {/* Create / Edit Modal */}
                 {showForm && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4">
                         <div
@@ -566,14 +652,18 @@ function Teachers() {
                             aria-labelledby="teacher-modal-title"
                             className="my-auto w-full max-w-lg overflow-hidden rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl"
                         >
+                            {/* Modal Header */}
                             <div className="flex items-center justify-between border-b border-gray-700 p-5">
                                 <div>
                                     <h2
                                         id="teacher-modal-title"
                                         className="text-xl font-bold"
                                     >
-                                        {editingTeacher ? "Edit Teacher" : "Add Teacher"}
+                                        {editingTeacher
+                                            ? "Edit Teacher"
+                                            : "Add Teacher"}
                                     </h2>
+
                                     <p className="mt-1 text-sm text-gray-400">
                                         {editingTeacher
                                             ? "Update the teacher's information."
@@ -592,7 +682,11 @@ function Teachers() {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-4 p-5">
+                            {/* Teacher Form */}
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-4 p-5"
+                            >
                                 <div>
                                     <label
                                         htmlFor="teacher-name"
@@ -600,6 +694,7 @@ function Teachers() {
                                     >
                                         Full Name
                                     </label>
+
                                     <input
                                         id="teacher-name"
                                         type="text"
@@ -621,6 +716,7 @@ function Teachers() {
                                     >
                                         Email Address
                                     </label>
+
                                     <input
                                         id="teacher-email"
                                         type="email"
@@ -641,6 +737,7 @@ function Teachers() {
                                         >
                                             Initial Password
                                         </label>
+
                                         <input
                                             id="teacher-password"
                                             type="password"
@@ -663,6 +760,7 @@ function Teachers() {
                                     >
                                         Employee ID
                                     </label>
+
                                     <input
                                         id="teacher-employee-id"
                                         type="text"
@@ -675,32 +773,12 @@ function Teachers() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label
-                                        htmlFor="teacher-department"
-                                        className="mb-2 block text-sm font-medium"
-                                    >
-                                        Department
-                                    </label>
-                                    <select
-                                        id="teacher-department"
-                                        name="department"
-                                        value={form.department}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full rounded-lg border border-gray-600 bg-gray-900 px-4 py-3 text-gray-100 outline-none transition focus:border-yellow-500"
-                                    >
-                                        <option value="">Select department</option>
-                                        {departments
-                                            .filter((department) => department.isActive !== false)
-                                            .map((department) => (
-                                                <option key={department._id} value={department._id}>
-                                                    {department.name} ({department.code})
-                                                </option>
-                                            ))}
-                                    </select>
-                                </div>
+                                <p className="rounded-lg border border-gray-700 bg-gray-900 p-3 text-sm text-gray-400">
+                                    Teacher department assignments can be managed
+                                    separately from the Allotment page.
+                                </p>
 
+                                {/* Modal Buttons */}
                                 <div className="flex flex-col-reverse gap-3 border-t border-gray-700 pt-5 sm:flex-row sm:justify-end">
                                     <button
                                         type="button"
@@ -724,7 +802,9 @@ function Teachers() {
                                         ) : (
                                             <>
                                                 <FiPlus size={18} />
-                                                {editingTeacher ? "Save Changes" : "Create Teacher"}
+                                                {editingTeacher
+                                                    ? "Save Changes"
+                                                    : "Create Teacher"}
                                             </>
                                         )}
                                     </button>
