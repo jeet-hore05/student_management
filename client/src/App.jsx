@@ -20,7 +20,8 @@ import View from "./Pages/View.jsx";
 
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 
-import AboutUs from "./Pages/AboutUs";
+import AboutUs from "./Pages/AboutUs.jsx";
+import ContactUs from "./Pages/ContactUs.jsx";
 
 function App() {
     return (
@@ -37,6 +38,7 @@ function App() {
                 element={<ResetPasswordPage />}
             />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
 
             {/* Any logged-in user */}
             <Route element={<ProtectedRoute />}>

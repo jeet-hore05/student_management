@@ -11,6 +11,7 @@ import attendanceRoutes from "./routes/attendance.routes.js";
 import viewRoutes from "./routes/view.routes.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 
+import contactRoutes from "./routes/contact.routes.js"
 
 config();
 
@@ -31,6 +32,8 @@ app.use("/api/v1/subject", subjectRoutes);
 app.use("/api/v1/routine", routineRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
 app.use("/api/v1/view", viewRoutes);
+
+app.use("/api/v1/contact", contactRoutes);
 
 
 app.use("/ping", function(req,res){
